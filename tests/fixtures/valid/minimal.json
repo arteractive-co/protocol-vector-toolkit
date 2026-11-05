@@ -1,0 +1,37 @@
+{
+  "format": "org.arteractive.protocol-vectors/draft-01",
+  "corpus_id": "minimal-corpus",
+  "algorithm": {
+    "name": "Minimal Toy",
+    "version": "1",
+    "reference": "https://example.invalid/minimal-toy"
+  },
+  "profiles": [
+    {
+      "id": "default"
+    }
+  ],
+  "encoding": {
+    "byte_strings": "lowercase-hex",
+    "integers": "canonical-unsigned-decimal",
+    "default_byte_order": "big"
+  },
+  "provenance": {
+    "artifacts": []
+  },
+  "cases": [
+    {
+      "id": "empty-bytes",
+      "profile": "default",
+      "disposition": "success",
+      "inputs": {},
+      "expected_outputs": {
+        "encoded": {
+          "kind": "bytes",
+          "value": "",
+          "length": 0
+        }
+      }
+    }
+  ]
+}

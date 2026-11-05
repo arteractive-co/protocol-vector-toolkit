@@ -1,0 +1,10 @@
+# SPDX-FileCopyrightText: 2026 Arteractive LLC
+# SPDX-License-Identifier: Apache-2.0
+
+include LICENSE LICENSES.md CONTRIBUTING.md SECURITY.md CODE_OF_CONDUCT.md
+include requirements-test.lock
+recursive-include schema *.json *.md
+recursive-include docs *.md
+recursive-include examples *.json *.md *.py
+recursive-include tests *.py *.json
+recursive-include tools *.py

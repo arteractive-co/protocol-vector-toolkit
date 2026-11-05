@@ -1,0 +1,56 @@
+{
+  "format": "org.arteractive.protocol-vectors/draft-01",
+  "corpus_id": "invalid-corpus",
+  "algorithm": {
+    "name": "Invalid Toy",
+    "version": "1",
+    "reference": "https://example.invalid/invalid-toy"
+  },
+  "profiles": [
+    {
+      "id": "default"
+    }
+  ],
+  "encoding": {
+    "byte_strings": "lowercase-hex",
+    "integers": "canonical-unsigned-decimal",
+    "default_byte_order": "little"
+  },
+  "provenance": {
+    "artifacts": []
+  },
+  "cases": [
+    {
+      "id": "duplicate",
+      "profile": "default",
+      "disposition": "success",
+      "inputs": {
+        "bad-integer": {
+          "kind": "integer",
+          "value": "01"
+        }
+      },
+      "expected_outputs": {
+        "bad-hex": {
+          "kind": "bytes",
+          "value": "AA",
+          "length": 1
+        },
+        "bad-length": {
+          "kind": "bytes",
+          "value": "0001",
+          "length": 3
+        }
+      }
+    },
+    {
+      "id": "duplicate",
+      "profile": "missing",
+      "disposition": "expected-error",
+      "inputs": {},
+      "expected_error": {
+        "code": "expected"
+      }
+    }
+  ]
+}

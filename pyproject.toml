@@ -1,0 +1,42 @@
+# SPDX-FileCopyrightText: 2026 Arteractive LLC
+# SPDX-License-Identifier: Apache-2.0
+
+[build-system]
+requires = ["setuptools==84.2.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "protocol-vector-toolkit"
+version = "0.1.0"
+description = "Language-neutral protocol test-vector validation and conformance tooling"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+authors = [
+  {name = "Arteractive LLC", email = "dev@arteractive.co"},
+]
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Programming Language :: Python :: 3.15",
+]
+dependencies = []
+
+[project.optional-dependencies]
+test = ["jsonschema==4.26.0"]
+
+[project.scripts]
+protocol-vectors = "protocol_vectors.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+protocol_vectors = ["schemas/*.json"]
