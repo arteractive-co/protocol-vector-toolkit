@@ -68,6 +68,12 @@ PYTHONPATH=src python -m protocol_vectors run \
 
 ## Trust boundaries
 
+An optional, source-checkout-only [Wycheproof ML-KEM integration](integrations/wycheproof/README.md)
+exercises a pinned external corpus through a test-only OpenSSL worker. It is
+experimental, requires a separately built native worker, and adds no core
+dependency. It is not part of the installed wheel or the default native CI
+matrix. Functional results do not establish cryptographic security or constant-time behavior.
+
 - Vector files are untrusted data and never select executable commands.
 - Adapter commands are supplied by the operator and executed as literal
   argument vectors without a shell.

@@ -35,6 +35,13 @@ Status: **development checkpoint, not approved for release**.
 
 ## Outstanding release gates
 
+The optional source-only Wycheproof integration has its own native dependency
+and coverage limits; see `integrations/wycheproof/README.md`. Default CI tests
+its pure-Python mapping/transport-boundary helpers with original synthetic
+fixtures only. Those tests do not establish full native corpus coverage.
+Adding this integration changes source-distribution contents; prior distribution
+digests or owner approval must not be reused for a newly built artifact.
+
 1. Require the exact pinned schema-test dependencies and
    `PVT_REQUIRE_SCHEMA_VALIDATOR=1` on the final candidate. Skips do not constitute
    parity evidence; the provisioned CI job supplies this check.
