@@ -1,0 +1,97 @@
+# SPDX-FileCopyrightText: 2026 Arteractive LLC
+# SPDX-License-Identifier: Apache-2.0
+
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  dco:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Check committed DCO trailers
+        run: python3 tools/check_dco.py
+
+  linux-python:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13", "3.14", "3.15"]
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Run dependency-free tests
+        env:
+          PYTHONPATH: src
+        run: python -m unittest discover -s tests -v
+      - name: Validate the toy corpus
+        env:
+          PYTHONPATH: src
+        run: python -m protocol_vectors validate examples/little-endian-fields/vectors.json
+
+  platform-boundaries:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+        python-version: ["3.11", "3.15"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Run dependency-free tests
+        env:
+          PYTHONPATH: src
+        run: python -m unittest discover -s tests -v
+
+  schema-packaging-and-optimized:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.11"
+      - name: Provision pinned build and schema-test tools
+        run: python -m pip install setuptools==84.2.1 -r requirements-test.lock
+      - name: Run schema parity tests
+        env:
+          PVT_REQUIRE_SCHEMA_VALIDATOR: "1"
+          PYTHONPATH: src
+        run: python -m unittest discover -s tests -p test_schema_alignment.py -v
+      - name: Run optimized tests
+        env:
+          PYTHONPATH: src
+        run: python -O -m unittest discover -s tests -v
+      - name: Build a wheel without network isolation
+        run: python -m pip wheel . --no-build-isolation --no-deps --wheel-dir dist
+      - name: Smoke-test the installed wheel and packaged schema
+        run: |
+          python -m pip install --force-reinstall dist/*.whl
+          protocol-vectors --help
+          python -c "from protocol_vectors.schemas import draft_01_text; assert 'draft-01' in draft_01_text()"

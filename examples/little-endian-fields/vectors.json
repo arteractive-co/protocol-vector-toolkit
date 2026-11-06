@@ -1,0 +1,133 @@
+{
+  "format": "org.arteractive.protocol-vectors/draft-01",
+  "corpus_id": "toy-little-endian-fields",
+  "algorithm": {
+    "name": "Toy Little-Endian Fields",
+    "version": "draft-01",
+    "reference": "https://arteractive.co/protocol-vector-toolkit/examples/little-endian-fields"
+  },
+  "profiles": [
+    {
+      "id": "u16-le",
+      "description": "One unsigned 16-bit field encoded little-endian",
+      "parameters": {
+        "bits": 16,
+        "fields": 1
+      }
+    },
+    {
+      "id": "u16-pair-le",
+      "description": "Two unsigned 16-bit fields concatenated in declaration order",
+      "parameters": {
+        "bits": 16,
+        "fields": 2
+      }
+    }
+  ],
+  "encoding": {
+    "byte_strings": "lowercase-hex",
+    "integers": "canonical-unsigned-decimal",
+    "default_byte_order": "little"
+  },
+  "provenance": {
+    "artifacts": []
+  },
+  "cases": [
+    {
+      "id": "u16-zero",
+      "profile": "u16-le",
+      "disposition": "success",
+      "inputs": {
+        "value": {
+          "kind": "integer",
+          "value": "0"
+        }
+      },
+      "expected_outputs": {
+        "encoded": {
+          "kind": "bytes",
+          "value": "0000",
+          "length": 2,
+          "byte_order": "little"
+        }
+      }
+    },
+    {
+      "id": "u16-maximum",
+      "profile": "u16-le",
+      "disposition": "success",
+      "inputs": {
+        "value": {
+          "kind": "integer",
+          "value": "65535"
+        }
+      },
+      "expected_outputs": {
+        "encoded": {
+          "kind": "bytes",
+          "value": "ffff",
+          "length": 2,
+          "byte_order": "little"
+        }
+      }
+    },
+    {
+      "id": "u16-pair-boundaries",
+      "profile": "u16-pair-le",
+      "disposition": "success",
+      "inputs": {
+        "first": {
+          "kind": "integer",
+          "value": "4660"
+        },
+        "second": {
+          "kind": "integer",
+          "value": "43981"
+        }
+      },
+      "expected_outputs": {
+        "encoded": {
+          "kind": "bytes",
+          "value": "3412cdab",
+          "length": 4,
+          "byte_order": "little"
+        }
+      }
+    },
+    {
+      "id": "u16-out-of-range",
+      "profile": "u16-le",
+      "disposition": "expected-error",
+      "inputs": {
+        "value": {
+          "kind": "integer",
+          "value": "65536"
+        }
+      },
+      "expected_error": {
+        "code": "toy.integer-out-of-range"
+      }
+    },
+    {
+      "id": "u16-decode-arbitrary",
+      "profile": "u16-le",
+      "disposition": "total-decoding",
+      "inputs": {
+        "encoded": {
+          "kind": "bytes",
+          "value": "0102",
+          "length": 2,
+          "byte_order": "little"
+        }
+      },
+      "expected_outputs": {
+        "value": {
+          "kind": "integer",
+          "value": "513"
+        }
+      },
+      "notes": "This case represents one included input; it does not by itself prove mathematical totality."
+    }
+  ],
+  "notes": "Original non-cryptographic toy data created for the Protocol Vector Toolkit."
+}

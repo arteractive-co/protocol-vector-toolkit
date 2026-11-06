@@ -1,0 +1,50 @@
+# SPDX-FileCopyrightText: 2026 Arteractive LLC
+# SPDX-License-Identifier: Apache-2.0
+
+name: Implementation task
+description: Define a scoped implementation or specification task
+title: ""
+labels: []
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Intended outcome
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+    validations:
+      required: true
+  - type: textarea
+    id: non_goals
+    attributes:
+      label: Non-goals
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance tests
+    validations:
+      required: true
+  - type: textarea
+    id: documentation
+    attributes:
+      label: Documentation and interoperability impact
+    validations:
+      required: true
+  - type: input
+    id: owner
+    attributes:
+      label: Owner
+    validations:
+      required: true
+  - type: input
+    id: approver
+    attributes:
+      label: Approver
+    validations:
+      required: true

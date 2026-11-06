@@ -1,0 +1,411 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://arteractive.co/schemas/protocol-vectors/vector-set-draft-01.schema.json",
+  "title": "Protocol Vector Set draft-01",
+  "description": "Normative structural and syntactic rules for a protocol vector corpus.",
+  "type": "object",
+  "required": [
+    "format",
+    "corpus_id",
+    "algorithm",
+    "profiles",
+    "encoding",
+    "provenance",
+    "cases"
+  ],
+  "properties": {
+    "format": {
+      "const": "org.arteractive.protocol-vectors/draft-01"
+    },
+    "corpus_id": {
+      "$ref": "#/$defs/identifier"
+    },
+    "algorithm": {
+      "$ref": "#/$defs/algorithm"
+    },
+    "profiles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/profile"
+      }
+    },
+    "encoding": {
+      "$ref": "#/$defs/encoding"
+    },
+    "provenance": {
+      "$ref": "#/$defs/provenance"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/case"
+      }
+    },
+    "extensions": {
+      "$ref": "#/$defs/extensions"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "pattern": "^[a-z0-9](?:[a-z0-9._-]{0,62}[a-z0-9])?(?![\\s\\S])"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+    },
+    "algorithm": {
+      "type": "object",
+      "required": ["name", "version", "reference"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reference": {
+          "type": "string",
+          "pattern": "^https://"
+        }
+      },
+      "additionalProperties": false
+    },
+    "profile": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "description": {
+          "type": "string"
+        },
+        "parameters": {
+          "type": "object"
+        },
+        "extensions": {
+          "$ref": "#/$defs/extensions"
+        }
+      },
+      "additionalProperties": false
+    },
+    "encoding": {
+      "type": "object",
+      "required": ["byte_strings", "integers", "default_byte_order"],
+      "properties": {
+        "byte_strings": {
+          "const": "lowercase-hex"
+        },
+        "integers": {
+          "const": "canonical-unsigned-decimal"
+        },
+        "default_byte_order": {
+          "enum": ["little", "big", "mixed"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "extensions": {
+      "type": "object",
+      "propertyNames": {
+        "anyOf": [
+          {
+            "pattern": "^https://"
+          },
+          {
+          "pattern": "^[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+(?![\\s\\S])"
+          }
+        ]
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "required": ["artifacts"],
+      "properties": {
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/artifact"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "artifact": {
+      "type": "object",
+      "required": ["id", "origin", "license", "redistribution"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "origin": {
+          "enum": ["original", "generated", "external"]
+        },
+        "license": {
+          "type": "string",
+          "minLength": 1
+        },
+        "output_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(?!\\.{1,2}(?:/|$))(?!.*\\/\\.{1,2}(?:/|$))[A-Za-z0-9._-]+(?:/[A-Za-z0-9._-]+)*(?![\\s\\S])"
+        },
+        "redistribution": {
+          "enum": ["original", "permitted", "link-only", "regenerated"]
+        },
+        "source_url": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_revision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_sha256": {
+          "$ref": "#/$defs/sha256"
+        },
+        "attribution": {
+          "type": "string",
+          "minLength": 1
+        },
+        "generator": {
+          "$ref": "#/$defs/generator"
+        },
+        "transformations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "origin": {
+                "const": "external"
+              }
+            },
+            "required": ["origin"]
+          },
+          "then": {
+            "required": ["source_url", "source_revision", "source_sha256", "attribution"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "origin": {
+                "const": "generated"
+              }
+            },
+            "required": ["origin"]
+          },
+          "then": {
+            "required": ["generator", "transformations"]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "redistribution": {
+                "const": "link-only"
+              }
+            },
+            "required": ["redistribution"]
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": ["path"]
+                },
+                {
+                  "required": ["output_sha256"]
+                }
+              ]
+            }
+          },
+          "else": {
+            "required": ["path", "output_sha256"]
+          }
+        }
+      ]
+    },
+    "generator": {
+      "type": "object",
+      "required": ["name", "version", "argv", "runtime"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "argv": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "runtime": {
+          "type": "string",
+          "minLength": 1
+        },
+        "toolchain": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "valueMap": {
+      "type": "object",
+      "propertyNames": {
+        "$ref": "#/$defs/identifier"
+      },
+      "additionalProperties": {
+        "$ref": "#/$defs/encodedValue"
+      }
+    },
+    "encodedValue": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/bytesValue"
+        },
+        {
+          "$ref": "#/$defs/integerValue"
+        }
+      ]
+    },
+    "bytesValue": {
+      "type": "object",
+      "required": ["kind", "value", "length"],
+      "properties": {
+        "kind": {
+          "const": "bytes"
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^(?:[0-9a-f]{2})*(?![\\s\\S])"
+        },
+        "length": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "byte_order": {
+          "enum": ["little", "big"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "integerValue": {
+      "type": "object",
+      "required": ["kind", "value"],
+      "properties": {
+        "kind": {
+          "const": "integer"
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^(?:0|[1-9][0-9]*)(?![\\s\\S])"
+        }
+      },
+      "additionalProperties": false
+    },
+    "expectedError": {
+      "type": "object",
+      "required": ["code"],
+      "properties": {
+        "code": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "case": {
+      "type": "object",
+      "required": ["id", "profile", "disposition", "inputs"],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "profile": {
+          "$ref": "#/$defs/identifier"
+        },
+        "disposition": {
+          "enum": ["success", "expected-error", "total-decoding"]
+        },
+        "inputs": {
+          "$ref": "#/$defs/valueMap"
+        },
+        "deterministic_choices": {
+          "$ref": "#/$defs/valueMap"
+        },
+        "expected_outputs": {
+          "$ref": "#/$defs/valueMap"
+        },
+        "expected_error": {
+          "$ref": "#/$defs/expectedError"
+        },
+        "extensions": {
+          "$ref": "#/$defs/extensions"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "disposition": {
+                "enum": ["success", "total-decoding"]
+              }
+            },
+            "required": ["disposition"]
+          },
+          "then": {
+            "required": ["expected_outputs"],
+            "not": {
+              "required": ["expected_error"]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "disposition": {
+                "const": "expected-error"
+              }
+            },
+            "required": ["disposition"]
+          },
+          "then": {
+            "required": ["expected_error"],
+            "not": {
+              "required": ["expected_outputs"]
+            }
+          }
+        }
+      ]
+    }
+  }
+}
