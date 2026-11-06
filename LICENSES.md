@@ -11,8 +11,8 @@ SPDX-FileCopyrightText: 2026 Arteractive LLC
 SPDX-License-Identifier: Apache-2.0
 ```
 
-This includes Python source, Markdown documentation, JSON Schema, JSON test
-fixtures, examples, and project configuration. Formats that permit comments
+This includes Python source, optional integration C source, Markdown documentation,
+JSON Schema, JSON test fixtures, examples, and project configuration. Formats that permit comments
 carry SPDX headers directly. Formats that do not permit comments are covered by
 this repository-level declaration.
 
